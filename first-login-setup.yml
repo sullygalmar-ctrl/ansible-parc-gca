@@ -5,6 +5,12 @@
 
   tasks:
 
+    - name: Installer zenity si absent
+      apt:
+        name: zenity
+        state: present
+        update_cache: false
+
     - name: Copier le script principal
       copy:
         src: files/first-login-pwchange.sh
