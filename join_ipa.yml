@@ -36,20 +36,4 @@
       service:
         name: lightdm
         state: restarted
-
-    - name: Configurer PAM pour gerer les changements de mots de passe
-      shell: pam-auth-update --package --enable sssd mkhomedir
-
-    - name: Configurer SSSD pour autoriser le changement de mot de passe
-      lineinfile:
-        path: /etc/sssd/sssd.conf
-        regexp: '^pwd_expiration_warning'
-        line: 'pwd_expiration_warning = 7'
-        insertafter: '^\[pam\]'
-      notify: Redemarrer SSSD
-
-  handlers:
-    - name: Redemarrer SSSD
-      service:
-        name: sssd
-        state: restarted
+        
