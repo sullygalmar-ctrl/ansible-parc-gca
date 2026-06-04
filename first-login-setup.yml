@@ -5,7 +5,7 @@
 
   tasks:
 
-    - name: Copier le script sur le poste
+    - name: Copier le script principal
       copy:
         src: files/first-login-pwchange.sh
         dest: /usr/local/bin/first-login-pwchange.sh
@@ -13,13 +13,18 @@
         group: root
         mode: "0755"
 
-    - name: Créer le fichier .desktop XDG autostart
+    - name: Déployer le déclencheur via profile.d
       copy:
-        dest: /etc/xdg/autostart/first-login-pwchange.desktop
+        dest: /etc/profile.d/first-login-pwchange.sh
         owner: root
         group: root
-        mode: "0644"
+        mode: "0755"
         content: |
+          #!/bin/bash
+          # Déclencheur au login - crée le .desktop autostart si absent
+          if [ -n "$DISPLAY" ] && [ ! -f "$HOME/.config/.pwchanged" ]; then
+            mkdir -p "$HOME/.config/autostart"
+            cat > "$HOME/.config/autostart/first-login-pwchange.desktop" << 'EOF'
           [Desktop Entry]
           Type=Application
           Name=First Login Password Change
@@ -27,6 +32,8 @@
           Hidden=false
           NoDisplay=true
           X-GNOME-Autostart-enabled=true
+          EOF
+          fi
 
     - name: Créer le fichier de log
       file:
