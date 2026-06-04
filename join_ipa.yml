@@ -23,8 +23,8 @@
         --password={{ ipa_admin_password }}
       args:
         creates: /etc/ipa/default.conf
-        
-- name: Créer le fichier de configuration pour le login manuel
+
+    - name: Créer le fichier de configuration pour le login manuel
       copy:
         dest: /etc/lightdm/lightdm.conf.d/90-manual-login.conf
         content: |
