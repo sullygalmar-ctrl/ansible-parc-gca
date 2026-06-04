@@ -36,4 +36,18 @@
       service:
         name: lightdm
         state: restarted
-        
+
+    - name: Créer l'autostart ouverture Nextcloud au premier login
+      copy:
+        dest: /etc/X11/Xsession.d/98-nextcloud-firstlogin
+        owner: root
+        group: root
+        mode: "0755"
+        content: |
+          #!/bin/bash
+          FLAG="$HOME/.config/.nextcloud_opened"
+          if [ ! -f "$FLAG" ]; then
+            touch "$FLAG"
+            sleep 5
+            xdg-open "https://nextcloud.test.gca-formation.fr" &
+          fi
