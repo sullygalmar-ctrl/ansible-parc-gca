@@ -24,15 +24,15 @@
       args:
         creates: /etc/ipa/default.conf
 
-    - name: Creer le fichier de configuration pour le manuel de connexion
+    - name: Activer la saisie manuelle du login
       copy:
         dest: /etc/lightdm/lightdm.conf.d/90-manual-login.conf
-        content:
+        content: |
           [Seat:*]
           greeter-show-manual-login=true
         mode: '0644'
 
-    - name: Redemarrer le service graphique pour appliquer les changements
+    - name: Redemarrer le service graphique
       systemctl:
         name: lightdm
         state: restarted
