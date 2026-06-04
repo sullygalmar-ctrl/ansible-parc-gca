@@ -1,10 +1,10 @@
 ---
-- name: Configuration des postes Elementary OS
+- name: Configuration des postes OS elementaire
   hosts: all
   become: yes
 
   tasks:
-    - name: Mise à jour des dépôts
+    - name: Mise a jour des depots
       apt:
         update_cache: yes
 
@@ -24,7 +24,7 @@
       args:
         creates: /etc/ipa/default.conf
 
-    - name: Créer le fichier de configuration pour le login manuel
+    - name: Creer le fichier de configuration pour le manuel de connexion
       copy:
         dest: /etc/lightdm/lightdm.conf.d/90-manual-login.conf
         content: |
@@ -32,7 +32,7 @@
           greeter-show-manual-login=true
         mode: '0644'
 
-    - name: Redémarrer le service graphique pour appliquer les changements
+    - name: Redemarrer le service graphique pour appliquer les changements
       systemctl:
         name: lightdm
         state: restarted
