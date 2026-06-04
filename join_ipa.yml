@@ -23,3 +23,16 @@
         --password={{ ipa_admin_password }}
       args:
         creates: /etc/ipa/default.conf
+        
+- name: Créer le fichier de configuration pour le login manuel
+      copy:
+        dest: /etc/lightdm/lightdm.conf.d/90-manual-login.conf
+        content: |
+          [Seat:*]
+          greeter-show-manual-login=true
+        mode: '0644'
+
+    - name: Redémarrer le service graphique pour appliquer les changements
+      systemctl:
+        name: lightdm
+        state: restarted
