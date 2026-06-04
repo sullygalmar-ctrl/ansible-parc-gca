@@ -41,12 +41,11 @@
       shell: pam-auth-update --package --enable sssd mkhomedir
 
     - name: Configurer SSSD pour autoriser le changement de mot de passe
-      ini_file:
+      lineinfile:
         path: /etc/sssd/sssd.conf
-        section: pam
-        option: pwd_expiration_warning
-        value: "7"
-        mode: '0600'
+        regexp: '^pwd_expiration_warning'
+        line: 'pwd_expiration_warning = 7'
+        insertafter: '^\[pam\]'
       notify: Redemarrer SSSD
 
   handlers:
