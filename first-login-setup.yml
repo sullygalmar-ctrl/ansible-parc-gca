@@ -48,3 +48,11 @@
         owner: root
         group: root
         mode: "0666"
+
+    - name: Installer les dépendances
+      apt:
+        name:
+          - zenity
+          - expect
+        state: present
+        update_cache: false
