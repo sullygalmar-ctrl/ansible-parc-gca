@@ -27,7 +27,7 @@
     - name: Creer le fichier de configuration pour le manuel de connexion
       copy:
         dest: /etc/lightdm/lightdm.conf.d/90-manual-login.conf
-        content: |
+        content:
           [Seat:*]
           greeter-show-manual-login=true
         mode: '0644'
