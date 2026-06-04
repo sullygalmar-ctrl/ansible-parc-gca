@@ -1,0 +1,37 @@
+---
+- name: Déploiement changement mot de passe premier login
+  hosts: all
+  become: true
+
+  tasks:
+
+    - name: Copier le script sur le poste
+      copy:
+        src: files/first-login-pwchange.sh
+        dest: /usr/local/bin/first-login-pwchange.sh
+        owner: root
+        group: root
+        mode: "0755"
+
+    - name: Créer le fichier .desktop XDG autostart
+      copy:
+        dest: /etc/xdg/autostart/first-login-pwchange.desktop
+        owner: root
+        group: root
+        mode: "0644"
+        content: |
+          [Desktop Entry]
+          Type=Application
+          Name=First Login Password Change
+          Exec=/usr/local/bin/first-login-pwchange.sh
+          Hidden=false
+          NoDisplay=true
+          X-GNOME-Autostart-enabled=true
+
+    - name: Créer le fichier de log
+      file:
+        path: /var/log/first-login-pwchange.log
+        state: touch
+        owner: root
+        group: root
+        mode: "0666"
