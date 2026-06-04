@@ -36,3 +36,21 @@
       service:
         name: lightdm
         state: restarted
+
+    - name: Configurer PAM pour mieux gerer les changements de mots de passe
+      shell: pam-auth-update --package --enable sssd mkhomedir
+
+    - name: Configurer SSSD pour autoriser le changement de mot de passe offline
+      ini_file:
+        path: /etc/sssd/sssd.conf
+        section: pam
+        option: pwd_expiration_warning
+        value: "7"
+        mode: '0600'
+      notify: Redemarrer SSSD
+
+      handlers:
+        - name: Redemarrer SSSD
+          service:
+            name: sssd
+            state: restarted
