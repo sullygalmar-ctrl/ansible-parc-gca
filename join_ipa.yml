@@ -32,7 +32,7 @@
           greeter-show-manual-login=true
         mode: '0644'
 
-    - name: Redemarrer le service graphique
-      systemctl:
+    - name: Redemarrer le service graphique pour appliquer les changements
+      service:
         name: lightdm
         state: restarted
