@@ -13,16 +13,16 @@
         group: root
         mode: "0755"
 
-    - name: Déployer le déclencheur via profile.d
+    - name: Déployer le déclencheur via Xsession.d
       copy:
-        dest: /etc/profile.d/first-login-pwchange.sh
+        dest: /etc/X11/Xsession.d/99-first-login-pwchange
         owner: root
         group: root
         mode: "0755"
         content: |
           #!/bin/bash
-          # Déclencheur au login - crée le .desktop autostart si absent
-          if [ -n "$DISPLAY" ] && [ ! -f "$HOME/.config/.pwchanged" ]; then
+          # Déclenché par LightDM au démarrage de toute session graphique
+          if [ ! -f "$HOME/.config/.pwchanged" ]; then
             mkdir -p "$HOME/.config/autostart"
             cat > "$HOME/.config/autostart/first-login-pwchange.desktop" << 'EOF'
           [Desktop Entry]
