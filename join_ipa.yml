@@ -1,0 +1,25 @@
+---
+- name: Configuration des postes Elementary OS
+  hosts: all
+  become: yes
+
+  tasks:
+    - name: Mise à jour des dépôts
+      apt:
+        update_cache: yes
+
+    - name: Installation du client FreeIPA
+      apt:
+        name: freeipa-client
+        state: present
+
+    - name: Jonction au domaine FreeIPA
+      command: >
+        ipa-client-install --unattended --mkhomedir
+        --server={{ ipa_server_url }}
+        --domain={{ ipa_domain }}
+        --realm={{ ipa_realm }}
+        --principal={{ ipa_admin_user }}
+        --password={{ ipa_admin_password }}
+      args:
+        creates: /etc/ipa/default.conf
