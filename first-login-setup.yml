@@ -1,44 +1,44 @@
----
-- name: Déploiement changement mot de passe premier login
-  hosts: all
-  become: true
+#!/bin/bash
+FLAG_FILE="$HOME/.config/.pwchanged"
 
-  tasks:
+if [ -f "$FLAG_FILE" ]; then
+    exit 0
+fi
 
-    - name: Copier le script principal
-      copy:
-        src: files/first-login-pwchange.sh
-        dest: /usr/local/bin/first-login-pwchange.sh
-        owner: root
-        group: root
-        mode: "0755"
+if ! id "$USER" | grep -q "ipa"; then
+    exit 0
+fi
 
-    - name: Déployer le déclencheur via Xsession.d
-      copy:
-        dest: /etc/X11/Xsession.d/99-first-login-pwchange
-        owner: root
-        group: root
-        mode: "0755"
-        content: |
-          #!/bin/bash
-          # Déclenché par LightDM au démarrage de toute session graphique
-          if [ ! -f "$HOME/.config/.pwchanged" ]; then
-            mkdir -p "$HOME/.config/autostart"
-            cat > "$HOME/.config/autostart/first-login-pwchange.desktop" << 'EOF'
-          [Desktop Entry]
-          Type=Application
-          Name=First Login Password Change
-          Exec=/usr/local/bin/first-login-pwchange.sh
-          Hidden=false
-          NoDisplay=true
-          X-GNOME-Autostart-enabled=true
-          EOF
-          fi
+TMPSCRIPT=$(mktemp /tmp/pwchange_XXXXXX.sh)
+cat > "$TMPSCRIPT" << 'ENDSCRIPT'
+#!/bin/bash
+clear
+echo "============================================"
+echo "  Bienvenue sur votre poste de travail."
+echo "  Vous devez définir votre mot de passe."
+echo "============================================"
+echo ""
+passwd
+STATUS=$?
+if [ $STATUS -eq 0 ]; then
+    mkdir -p ~/.config
+    touch ~/.config/.pwchanged
+    echo "$(date) - $USER : succès" >> /var/log/first-login-pwchange.log
+    echo ""
+    echo "✓ Mot de passe mis à jour. Fermeture dans 3 secondes..."
+    sleep 3
+elif [ $STATUS -eq 10 ]; then
+    echo ""
+    echo "⚠ Mot de passe changé trop récemment."
+    echo "  Contactez votre administrateur."
+    sleep 6
+else
+    echo ""
+    echo "✗ Échec. Nouvelle tentative à la prochaine connexion."
+    sleep 5
+fi
+rm -f "$0"
+ENDSCRIPT
 
-    - name: Créer le fichier de log
-      file:
-        path: /var/log/first-login-pwchange.log
-        state: touch
-        owner: root
-        group: root
-        mode: "0666"
+chmod +x "$TMPSCRIPT"
+io.elementary.terminal -x "$TMPSCRIPT"
