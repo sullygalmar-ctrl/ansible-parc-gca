@@ -1,6 +1,6 @@
 ---
 - name: Provisionnement utilisateur IPA
-  hosts: localhost
+  hosts: freeipa
   become: no
   gather_facts: no
 
