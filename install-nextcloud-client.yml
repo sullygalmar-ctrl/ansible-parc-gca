@@ -1,0 +1,56 @@
+---
+- name: Installation et configuration du client Nextcloud
+  hosts: all
+  become: true
+
+  tasks:
+
+    - name: Ajouter le dépôt Nextcloud Desktop
+      apt:
+        name: software-properties-common
+        state: present
+
+    - name: Ajouter la clé GPG Nextcloud
+      shell: |
+        curl -fsSL https://download.opensuse.org/repositories/isv:/ownCloud:/desktop/Ubuntu_24.04/Release.key | gpg --dearmor -o /usr/share/keyrings/owncloud-desktop.gpg
+      args:
+        creates: /usr/share/keyrings/owncloud-desktop.gpg
+
+    - name: Ajouter le dépôt
+      copy:
+        dest: /etc/apt/sources.list.d/owncloud-desktop.list
+        content: |
+          deb [signed-by=/usr/share/keyrings/owncloud-desktop.gpg] https://download.opensuse.org/repositories/isv:/ownCloud:/desktop/Ubuntu_24.04/ /
+        mode: '0644'
+
+    - name: Mettre à jour les dépôts
+      apt:
+        update_cache: yes
+
+    - name: Installer le client Nextcloud
+      apt:
+        name: nextcloud-desktop
+        state: present
+
+    - name: Déployer le script de configuration automatique au premier login
+      copy:
+        dest: /etc/X11/Xsession.d/97-nextcloud-client-setup
+        owner: root
+        group: root
+        mode: "0755"
+        content: |
+          #!/bin/bash
+          FLAG="$HOME/.config/.nextcloud_configured"
+          if [ ! -f "$FLAG" ]; then
+            mkdir -p "$HOME/.config/autostart"
+            cat > "$HOME/.config/autostart/nextcloud-client.desktop" << 'EOF'
+          [Desktop Entry]
+          Type=Application
+          Name=Nextcloud
+          Exec=nextcloud
+          Hidden=false
+          NoDisplay=false
+          X-GNOME-Autostart-enabled=true
+          EOF
+            touch "$FLAG"
+          fi
