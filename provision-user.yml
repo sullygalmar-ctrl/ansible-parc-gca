@@ -16,7 +16,7 @@
     - name: Synchroniser Authentik via API
       uri:
         url: "https://authentik.test.gca-formation.fr/api/v3/sources/ldap/freeipa/sync/"
-        method: POST
+        method: RUN
         headers:
           Authorization: "Bearer {{ authentik_token }}"
           Content-Type: "application/json"
