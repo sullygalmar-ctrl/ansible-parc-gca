@@ -13,11 +13,3 @@
           - libreoffice-help-fr
         state: present
         update_cache: yes
-
-    - name: Définir LibreOffice comme application par défaut pour les documents
-      alternatives:
-        name: "{{ item.name }}"
-        path: "{{ item.path }}"
-      loop:
-        - { name: 'ooffice', path: '/usr/bin/libreoffice' }
-      ignore_errors: yes
