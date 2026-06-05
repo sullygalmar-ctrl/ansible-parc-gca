@@ -6,7 +6,7 @@
 
   tasks:
 
-    - name: Obtenir un ticket Kerberos et corriger l'expiration
+    - name: Obtenir un ticket Kerberos et corriger l expiration
       shell: |
         echo "{{ ipa_admin_password }}" | kinit admin@TEST.GCA-FORMATION.FR
         ipa user-mod {{ ipa_username }} --password-expiration="20270101000000Z"
@@ -16,9 +16,11 @@
     - name: Synchroniser Authentik via API
       uri:
         url: "https://authentik.test.gca-formation.fr/api/v3/sources/ldap/freeipa/sync/"
-        method: RUN
+        method: POST
         headers:
           Authorization: "Bearer {{ authentik_token }}"
           Content-Type: "application/json"
+        body_format: json
+        body: {}
         status_code: [200, 204]
         validate_certs: no
