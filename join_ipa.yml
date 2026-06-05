@@ -14,6 +14,12 @@
         name: freeipa-client
         state: present
 
+    - name: Désinstaller le client FreeIPA si déjà présent
+      command: ipa-client-install --uninstall --unattended
+      ignore_errors: yes
+      args:
+        removes: /etc/ipa/default.conf
+
     - name: Jonction au domaine FreeIPA
       command: >
         ipa-client-install --unattended --mkhomedir
