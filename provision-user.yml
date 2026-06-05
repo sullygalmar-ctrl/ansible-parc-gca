@@ -1,0 +1,27 @@
+---
+- name: Provisionnement utilisateur IPA
+  hosts: localhost
+  become: no
+
+  vars:
+    ipa_server: "freeipa.test.gca-formation.fr"
+    ipa_admin: "admin"
+    # ipa_admin_password : à définir dans AWX comme variable chiffrée
+    # ipa_username : à saisir au lancement du job
+
+  tasks:
+
+    - name: Corriger l'expiration du mot de passe
+      shell: |
+        echo "{{ ipa_admin_password }}" | kinit {{ ipa_admin }}
+        ipa user-mod {{ ipa_username }} --password-expiration="20270101000000Z"
+      delegate_to: "{{ ipa_server }}"
+      no_log: true
+
+    - name: Synchroniser Authentik
+      uri:
+        url: "https://authentik.test.gca-formation.fr/api/v3/sources/ldap/freeipa/sync/"
+        method: POST
+        headers:
+          Authorization: "Bearer {{ authentik_token }}"
+        status_code: 200
